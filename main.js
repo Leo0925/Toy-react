@@ -7,12 +7,17 @@ class Mycomponent extends Compoment {
       <span>world</span>
 
       <span>!!!</span>
-
+      <div>
+        {true}
+        {this.children}
+      </div>
     </div>
   }
 };
 
-let a = <Mycomponent name="q"/>
+let a = <Mycomponent name="q">
+  <div>123</div>
+</Mycomponent>
 
 // let a = <div name='a' id='id'>
 //   <span>hello</span>

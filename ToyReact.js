@@ -15,12 +15,18 @@ class ElementWrapper {
 }
 
 export class Compoment {
+  constructor() {
+    this.children = [];
+  }
   mountTo(parent) {
     let vdom = this.render();
     vdom.mountTo(parent);
   }
   setAttribute(name, value) {
     this[name] = value;
+  }
+  appendChild(vchild) {
+    this.children.push(vchild);
   }
 }
 
@@ -47,14 +53,30 @@ export let ToyReact = {
     for (let name in attributes) {
       element.setAttribute(name, attributes[name]);
     }
-    // 遍历 child
-    for (let child of children) {
-      // 如果传入的是字符串，不是 node 节点，则创建 textNode 节点
-      if (typeof child === 'string') {
-        child = new TextWrapper(child);
+    let insetChildren = children => {
+      // 遍历 child
+      for (let child of children) {
+        // 如果传入的是字符串，不是 node 节点，则创建 textNode 节点
+        // if (typeof child === 'string') {
+        //   child = new TextWrapper(child);
+        // }
+        // 如果组件里面嵌套了 children，则会传入一个数组
+        if (typeof child === 'object' && child instanceof Array) {
+          insetChildren(child);
+        } else {
+          // 如果组件中传入的 children 不是我们认识的，则 tostring 下
+          if (!(child instanceof Compoment) && !(child instanceof ElementWrapper) && !(child instanceof TextWrapper)) {
+            child = String(child);
+          }
+          if (typeof child === 'string') {
+            child = new TextWrapper(child);
+          }
+          element.appendChild(child);
+        }
       }
-      element.appendChild(child);
     }
+    insetChildren(children);
+    
     return element;
   },
   render(vdom, element) {
