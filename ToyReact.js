@@ -67,11 +67,15 @@ export class Component {
   setState(state){
     let merge = (oldState, newState) => {
       for (let p in newState) {
-        if (typeof newState[p] === 'object') {
-          if (typeof oldState[p] === 'object') {
-            oldState[p] = {};
+        if (typeof newState[p] === 'object' && newState[p] !== null) {
+          if (typeof oldState[p] !== 'object') {
+            if (newState[p] instanceof Array) {
+              oldState[p] = [];
+            } else {
+              oldState[p] = {};
+            }
           }
-          merger(oldState[p], newState[p])
+          merge(oldState[p], newState[p])
         } else {
           oldState[p] = newState[p];
         }
@@ -121,6 +125,9 @@ export let ToyReact = {
         if (typeof child === 'object' && child instanceof Array) {
           insetChildren(child);
         } else {
+          if (child === null|| child === void 0) {
+            child = '';
+          }
           // 如果组件中传入的 children 不是我们认识的，则 tostring 下
           if (!(child instanceof Component) && !(child instanceof ElementWrapper) && !(child instanceof TextWrapper)) {
             child = String(child);
